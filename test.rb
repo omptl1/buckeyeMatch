@@ -36,16 +36,33 @@ end
 puts "\n Enter the club you're curious about in number:"
 choice = gets.chomp.to_i
 
-# Ensure valid input
+# Ensure valid input, if invalid program ends
 if choice >= 1 && choice <= organization_data.size
   chosen_org = organization_data[choice - 1]
   org_id = chosen_org[:id] # Ensure you've extracted the ID correctly above
 
   details_url = "https://activities.osu.edu/involvement/student_organizations/find_a_student_org?i=#{org_id}&v=list&s=#{search_query}&c=Columbus&page=0"
-  puts details_url
 else
-    abort("An invalid number was entered! Closing the program.")
+	abort("You need to enter a valid number between 0 and #{organization_data.size}")
 end
+
+chosen_Link = doc.xpath("//strong/a/@href")
+puts chosen_Link[0]
+
+orgLink = "https://activities.osu.edu"
+finalLink = orgLink.chomp + chosen_Link[0]
+
+# Creating new Mechanize object
+orgAgent = Mechanize.new
+
+# Creating HTML page for chosen organization
+orgPage = orgAgent.get(finalLink)
+
+# Creating document parser
+orgDoc = orgPage.parser
+
+
+
 =begin  
 # Fetch and parse the chosen club's details
   details_page = agent.get(details_url)
