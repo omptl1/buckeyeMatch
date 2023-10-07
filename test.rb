@@ -10,7 +10,7 @@ url = 'https://activities.osu.edu/involvement/student_organizations/find_a_stude
 # Prompt the user for search input
 print 'Enter your search query: '
 search_query = gets.chomp
-query_param = "?v=card&s=#{search_query}&c=Columbus"
+query_param = "?v=list&s=#{search_query}&c=Columbus"
 
 # Construct the full URL with the user's query
 full_url = url + query_param
@@ -20,8 +20,8 @@ page = agent.get(full_url)
 
 # Parse the fetched page with Nokogiri
 doc = page.parser
-
-organization_data = doc.css('h2.c-card__header').map do |header|
+ 
+organization_data = doc.xpath('//strong/a/text()').map do |header|
   {
     name: header.text.strip,
     id: doc.at_css('body')['id']
@@ -41,8 +41,10 @@ if choice >= 1 && choice <= organization_data.size
   chosen_org = organization_data[choice - 1]
   org_id = chosen_org[:id] # Ensure you've extracted the ID correctly above
 
-  details_url = "https://activities.osu.edu/involvement/student_organizations/find_a_student_org?i=#{org_id}&v=card&s=#{search_query}&c=Columbus&page=0"
+  details_url = "https://activities.osu.edu/involvement/student_organizations/find_a_student_org?i=#{org_id}&v=list&s=#{search_query}&c=Columbus&page=0"
   puts details_url
+else
+    abort("An invalid number was entered! Closing the program.")
 end
 =begin  
 # Fetch and parse the chosen club's details
