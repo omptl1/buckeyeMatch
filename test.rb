@@ -65,10 +65,11 @@ orgPage = orgAgent.get(finalLink)
 # Creating document parser
 orgDoc = orgPage.parser
 
-orgData = orgDoc.xpath(".td[2]")
-orgEmail = orgData.xpath(".td[7]")
+orgData = orgDoc.xpath("//td/text()")
+	
+orgEmail = orgData.xpath("//td/a/@text()")
 
-puts "\n The organization purpose statement is: #{orgData}"
+puts "\n The organization purpose statement is: #{orgData[2]}"
 puts "\n The organization email is: #{orgEmail}"
 
 =begin  
