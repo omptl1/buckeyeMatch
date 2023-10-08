@@ -1,6 +1,4 @@
 require 'mechanize'
-require 'nokogiri'
-require 'open-uri'
 
 # Initialize Mechanize
 agent = Mechanize.new
@@ -41,20 +39,3 @@ search_form = page.forms.find do |form|
       end
     end
 end
-  
-
-if 
-  #Holds the name of the text file that will contain student org info
-  fileName = "student_org.txt"
-  #Will be used to put the scraped data into a txt file
-  File.open(fileName, 'w') do |file|
-   #Need to put scrapped data into file
-   #fileName.puts()
-  end
-
-
-
-
-  
-  
-  
