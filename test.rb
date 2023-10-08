@@ -21,6 +21,7 @@ page = agent.get(full_url)
 # Parse the fetched page with Nokogiri
 doc = page.parser
  
+# Grab text for each organization and place in map
 organization_data = doc.xpath('//strong/a/text()').map do |header|
   {
     name: header.text.strip,
@@ -28,12 +29,13 @@ organization_data = doc.xpath('//strong/a/text()').map do |header|
   }
 end
 
+# Iterate over org data to make list more presentable
 organization_data.each_with_index do |org, index|
   puts "#{index + 1}. #{org[:name]}"
 end
 
 # Prompt user to choose a club
-puts "\n Enter the club you're curious about in number:"
+puts "\n Please enter the number of the club you are interested in."
 choice = gets.chomp.to_i
 
 # Ensure valid input, if invalid program ends
@@ -46,11 +48,13 @@ else
 	abort("You need to enter a valid number between 0 and #{organization_data.size}")
 end
 
+# Grabbing the url of the chosen organization
 chosen_Link = doc.xpath("//strong/a/@href")
-puts chosen_Link[0]
 
+# Setting orgLink to the activities main site to later append
+# the chosen_Link to
 orgLink = "https://activities.osu.edu"
-finalLink = orgLink.chomp + chosen_Link[0]
+finalLink = orgLink.chomp + chosen_Link[choice - 1]
 
 # Creating new Mechanize object
 orgAgent = Mechanize.new
@@ -61,7 +65,11 @@ orgPage = orgAgent.get(finalLink)
 # Creating document parser
 orgDoc = orgPage.parser
 
+orgData = orgDoc.xpath(".td[2]")
+orgEmail = orgData.xpath(".td[7]")
 
+puts "\n The organization purpose statement is: #{orgData}"
+puts "\n The organization email is: #{orgEmail}"
 
 =begin  
 # Fetch and parse the chosen club's details
