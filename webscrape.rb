@@ -1,6 +1,6 @@
 require 'mechanize'
 require 'nokogiri'
-require 'mail.rb'
+require_relative 'mail.rb'
 
 class Main
 
@@ -80,42 +80,32 @@ orgData = orgDoc.xpath("//td/text()")
 
 td_element = doc.at('/table/tbody/tr[4]/td/a/text()')
 
-email = td_element.at{'a'}.text[/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b/]
-
-=begin
-# Get primary leader information
-orgLeadAgent = Mechanize.new
-orgLeadPage = orgLeadAgent.get(finalLink)
-orgLeadDoc = orgLeadPage.parser
-orgLead = orgLeadDoc.xpath("/table/tbody/tr[4]/td/a/text()")
-=end
-
+#Get primary leader name and hyperlinked email
+email = orgDoc.at("th:contains('Primary Leader:') + td a")['href'].sub('mailto:', '')
+orgLead = orgDoc.at("th:contains('Primary Leader:') + td a").text
 
 puts "\n The organization campus is: #{orgData[0]}"
 puts "\n The organization status is: #{orgData[1]}"
 puts "\n The organization purpose stamement is: #{orgData[2]}"
 puts "\n The Primary leader is: #{orgLead}"
+puts "\n The primary leader's email is: #{email}"
 
 
-
-=begin
 #The text file that will contain student org info to be emailed
 fileName = "student_org.txt"
  
-#Need to get scraped data
-s_Data = "0" #FIXME 
- 
-#s_Data will contain the scraped data
-if s_Data
-	#Will be used to put the scraped data into a txt file
-	File.open(fileName, 'w') do |file|
-		#Need to put scrapped data into file
-		fileName.puts(s_Data)
-	end
+#Will be used to put the scraped data into a txt file
+File.open(fileName, 'w') do |file|
+  #Need to put scrapped data into file
+  file.write("\n The organization campus is: #{orgData[0]}")
+  file.write("\n The organization status is: #{orgData[1]}")
+  file.write("\n The organization purpose stamement is: #{orgData[2]}")
+  file.write("\n The Primary leader is: #{orgLead}")
+  file.write("\n The primary leader's email is: #{email}")
 end
  
 #Passes the student org data to be emailed
-email(student_org.txt)
-=end
+send = SendEmail.new
+send.email(fileName)
 
 end
