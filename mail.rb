@@ -4,6 +4,7 @@ require 'mail'
 class SendEmail
 
     def email(webScrapedInfo)
+
         
         #Get user email
         puts "Would you like the student orginazation information emailed to you?(y or n)"
@@ -14,7 +15,13 @@ class SendEmail
             user_email = gets.chomp
             
             #Set up email options
-            options = {:address => "smtp.gmail.com", :port => 587, :user_name => "StudentOrgInfo@gmail.com", :password => "OSUNetwork2023", :authentication => 'plain'}
+            options = {
+                :address => "smtp.gmail.com", 
+                :port => 587,
+                :user_name => "StudentOrgInfo@gmail.com", 
+                :password => "axka ynxy zego wjog", 
+
+                :authentication => 'plain'}
 
             Mail.defaults do
                 delivery_method :smtp, options
@@ -26,10 +33,11 @@ class SendEmail
                 to      user_email
                 subject 'OSU Student Organization Info'
                 body    webScrapedInfo
+                add_file 'student_org.txt'
             end
 
-            #Used to send the email
             mail.deliver!
+
 
             puts "Email sent successfully!"
         else

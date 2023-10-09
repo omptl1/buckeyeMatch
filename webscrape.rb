@@ -102,10 +102,11 @@ File.open(fileName, 'w') do |file|
   file.write("\n The organization purpose stamement is: #{orgData[2]}")
   file.write("\n The Primary leader is: #{orgLead}")
   file.write("\n The primary leader's email is: #{email}")
+
 end
  
-#Passes the student org data to be emailed
-send = SendEmail.new
-send.email(fileName)
+  #Passes the student org data to be emailed
+  send = SendEmail.new
+  send.email(fileName)
 
 end
