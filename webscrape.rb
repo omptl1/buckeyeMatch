@@ -44,69 +44,87 @@ organization_data.each_with_index do |org, index|
 end
 
 # Prompt user to choose a club
-puts "\n Please enter the number of the club you are interested in."
-choice = gets.chomp.to_i
+#puts "\n Please enter the number of the club you are interested in."
+#choice = gets.chomp.to_i
 
-#FIXME: ask for campus?
+#Ask for number of orgs to send in email
+puts "\n How many organizations would you like to learn more about?"
+numOrgs = gets.chomp.to_i
 
-# Ensure valid input, if invalid program ends
-if choice >= 1 && choice <= organization_data.size
-  chosen_org = organization_data[choice - 1]
-  org_id = chosen_org[:id] # Ensure you've extracted the ID correctly above
+  for i in 1..numOrgs
+    #Make a random number between 0 and org data size
+    random_org_index = rand(organization_data.size)
 
-  details_url = "https://activities.osu.edu/involvement/student_organizations/find_a_student_org?i=#{org_id}&v=list&s=#{search_query}&c=Columbus&page=0"
-else
-	abort("You need to enter a valid number between 0 and #{organization_data.size}")
-end
+    # Ensure valid input, if invalid program ends
+    if random_org_index >= 1 && random_org_index <= organization_data.size
+      chosen_org = organization_data[random_org_index]
+      org_id = chosen_org[:id] # Ensure you've extracted the ID correctly above
 
-# Grabbing the url of the chosen organization
-chosen_Link = doc.xpath("//strong/a/@href")
+      details_url = "https://activities.osu.edu/involvement/student_organizations/find_a_student_org?i=#{org_id}&v=list&s=#{search_query}&c=Columbus&page=0"
+    #else
+      #abort("You need to enter a valid number between 0 and #{organization_data.size}")
+    end
 
-# Setting orgLink to the activities main site to later append
-# the chosen_Link to
-orgLink = "https://activities.osu.edu"
-finalLink = orgLink.chomp + chosen_Link[choice - 1]
+    # Grabbing the url of the chosen organization
+    chosen_Link = doc.xpath("//strong/a/@href")
 
-# Creating new Mechanize object
-orgAgent = Mechanize.new
+    # Setting orgLink to the activities main site to later append
+    # the chosen_Link to
+    orgLink = "https://activities.osu.edu"
+    finalLink = orgLink.chomp + chosen_Link[random_org_index]
 
-# Creating HTML page for chosen organization
-orgPage = orgAgent.get(finalLink)
+    # Creating new Mechanize object
+    orgAgent = Mechanize.new
 
-# Creating document parser
-orgDoc = orgPage.parser
+    # Creating HTML page for chosen organization
+    orgPage = orgAgent.get(finalLink)
 
-orgData = orgDoc.xpath("//td/text()")
+    # Creating document parser
+    orgDoc = orgPage.parser
 
-td_element = doc.at('/table/tbody/tr[4]/td/a/text()')
+    orgData = orgDoc.xpath("//td/text()")
 
-#Get primary leader name and hyperlinked email
-email = orgDoc.at("th:contains('Primary Leader:') + td a")['href'].sub('mailto:', '')
-orgLead = orgDoc.at("th:contains('Primary Leader:') + td a").text
+    td_element = doc.at('/table/tbody/tr[4]/td/a/text()')
 
-puts "\n The organization campus is: #{orgData[0]}"
-puts "\n The organization status is: #{orgData[1]}"
-puts "\n The organization purpose stamement is: #{orgData[2]}"
-puts "\n The Primary leader is: #{orgLead}"
-puts "\n The primary leader's email is: #{email}"
+    #Scrape organization name
+    orgName = "#{organization_data[random_org_index][:name]}"
 
+    #Get primary leader name and hyperlinked email
+    email = orgDoc.at("th:contains('Primary Leader:') + td a")['href'].sub('mailto:', '')
+    orgLead = orgDoc.at("th:contains('Primary Leader:') + td a").text
 
-#The text file that will contain student org info to be emailed
-fileName = "student_org.txt"
+    puts "\n The organization name is: #{orgName}"
+    puts "\n The organization campus is: #{orgData[0]}"
+    puts "\n The organization status is: #{orgData[1]}"
+    puts "\n The organization purpose stamement is: #{orgData[2]}"
+    puts "\n The Primary leader is: #{orgLead}"
+    puts "\n The primary leader's email is: #{email}"
+    puts "\n\n-------------------------------------------------------------------------------\n\n"
+    
+    #Output file name
+    fileName = "student_org.txt"
+
+    #Will be used to put the scraped data into a txt file
+    File.open(fileName, 'a') do |file|
+      #Need to put scrapped data into file
+      file.write("\n The organization name is: #{orgName}")
+      file.write("\n The organization campus is: #{orgData[0]}")
+      file.write("\n The organization status is: #{orgData[1]}")
+      file.write("\n The organization purpose stamement is: #{orgData[2]}")
+      file.write("\n The Primary leader is: #{orgLead}")
+      file.write("\n The primary leader's email is: #{email}")
+      file.write("\n\n-------------------------------------------------------------------------------\n\n")
+
+    end
+  end
  
-#Will be used to put the scraped data into a txt file
-File.open(fileName, 'w') do |file|
-  #Need to put scrapped data into file
-  file.write("\n The organization campus is: #{orgData[0]}")
-  file.write("\n The organization status is: #{orgData[1]}")
-  file.write("\n The organization purpose stamement is: #{orgData[2]}")
-  file.write("\n The Primary leader is: #{orgLead}")
-  file.write("\n The primary leader's email is: #{email}")
 
-end
- 
+
   #Passes the student org data to be emailed
   send = SendEmail.new
   send.email(fileName)
+
+  #This is used to clear the file after sending recommendations
+  File.open(fileName, 'w') do |file| end
 
 end
