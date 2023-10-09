@@ -44,4 +44,30 @@ class SendEmail
             puts "email not sent!"
     	end
    end
+
+   def send_contact_email(email_address, subject, message)
+    # Set up email options
+    options = {
+      address: 'smtp.gmail.com',
+      port: 587,
+      user_name: 'StudentOrgInfo@gmail.com',
+      password: 'axka ynxy zego wjog',
+      authentication: 'plain'
+    }
+
+    Mail.defaults do
+      delivery_method :smtp, options
+    end
+
+    # Used to create the email
+    mail = Mail.new do
+      from 'StudentOrgInfo@gmail.com'
+      to email_address
+      subject subject
+      body message
+    end
+    
+    mail.deliver!
+  end
+
 end
