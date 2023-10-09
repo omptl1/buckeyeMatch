@@ -20,10 +20,17 @@ page = agent.get(full_url)
 
 # Parse the fetched page with Nokogiri
 doc = page.parser
- 
+
+#FIXME: check if no organizations are returned.
+
+if doc.content.include?("No Student Organizations found.")
+	abort("Invalid search. No organization found for'#{search_query}'.")
+end
+
+
 # Grab text for each organization and place in map
 organization_data = doc.xpath('//strong/a/text()').map do |header|
-  {
+  {	
     name: header.text.strip,
     id: doc.at_css('body')['id']
   }
@@ -37,6 +44,8 @@ end
 # Prompt user to choose a club
 puts "\n Please enter the number of the club you are interested in."
 choice = gets.chomp.to_i
+
+#FIXME: ask for campus?
 
 # Ensure valid input, if invalid program ends
 if choice >= 1 && choice <= organization_data.size
@@ -67,23 +76,29 @@ orgDoc = orgPage.parser
 
 orgData = orgDoc.xpath("//td/text()")
 	
-orgEmail = orgData.xpath("//td/a/@text()")
+# FIXME orgEmail = orgDoc.xpath('//tr[contains(text(), "organization_email")]')
 
-puts "\n The organization purpose statement is: #{orgData[2]}"
-puts "\n The organization email is: #{orgEmail}"
+puts "\n The organization campus is: #{orgData[0]}"
+puts "\n The organization status is: #{orgData[1]}"
+puts "\n The organization purpose stamement is: #{orgData[2]}"
+puts "\n The Primary leader is: #{orgData[3]}"
 
-=begin  
-# Fetch and parse the chosen club's details
-  details_page = agent.get(details_url)
-  club_userwant = Nokogiri::HTML(details_page.body)
-
-  # Target the <th> element that contains the text "Purpose Statement"
-purpose_th = club_userwant.at_css('th:contains("Purpose Statement:") i')
-  # Extract the text content of the following <td> sibling
-  purpose_text = purpose_th.next_element.text.strip
-
-  puts purpose_text
-else
-  puts "Invalid choice!"
+#The text file that will contain student org info to be emailed
+fileName = "student_org.txt"
+ 
+#Need to get scraped data
+s_Data =
+ 
+#s_Data will contain the scraped data
+if s_Data
+	#Will be used to put the scraped data into a txt file
+	File.open(fileName, 'w') do |file|
+		#Need to put scrapped data into file
+		fileName.puts(s_Data)
+	end
 end
-=end
+ 
+ #Passes the student org data to be emailed
+ email(student_org.txt)
+
+
