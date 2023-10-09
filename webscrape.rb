@@ -1,5 +1,8 @@
 require 'mechanize'
 require 'nokogiri'
+require 'mail.rb'
+
+class Main
 
 # Initialize Mechanize
 agent = Mechanize.new
@@ -21,8 +24,7 @@ page = agent.get(full_url)
 # Parse the fetched page with Nokogiri
 doc = page.parser
 
-#FIXME: check if no organizations are returned.
-
+# Check if no organizations are returned.
 if doc.content.include?("No Student Organizations found.")
 	abort("Invalid search. No organization found for'#{search_query}'.")
 end
@@ -75,19 +77,33 @@ orgPage = orgAgent.get(finalLink)
 orgDoc = orgPage.parser
 
 orgData = orgDoc.xpath("//td/text()")
-	
-# FIXME orgEmail = orgDoc.xpath('//tr[contains(text(), "organization_email")]')
+
+td_element = doc.at('/table/tbody/tr[4]/td/a/text()')
+
+email = td_element.at{'a'}.text[/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b/]
+
+=begin
+# Get primary leader information
+orgLeadAgent = Mechanize.new
+orgLeadPage = orgLeadAgent.get(finalLink)
+orgLeadDoc = orgLeadPage.parser
+orgLead = orgLeadDoc.xpath("/table/tbody/tr[4]/td/a/text()")
+=end
+
 
 puts "\n The organization campus is: #{orgData[0]}"
 puts "\n The organization status is: #{orgData[1]}"
 puts "\n The organization purpose stamement is: #{orgData[2]}"
-puts "\n The Primary leader is: #{orgData[3]}"
+puts "\n The Primary leader is: #{orgLead}"
 
+
+
+=begin
 #The text file that will contain student org info to be emailed
 fileName = "student_org.txt"
  
 #Need to get scraped data
-s_Data =
+s_Data = "0" #FIXME 
  
 #s_Data will contain the scraped data
 if s_Data
@@ -98,7 +114,8 @@ if s_Data
 	end
 end
  
- #Passes the student org data to be emailed
- email(student_org.txt)
+#Passes the student org data to be emailed
+email(student_org.txt)
+=end
 
-
+end

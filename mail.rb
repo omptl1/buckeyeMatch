@@ -1,7 +1,7 @@
 require 'net/smtp'
 require 'mail'
 
-class sendEmail
+class SendEmail
 
     def email(webScrapedInfo)
         
@@ -34,5 +34,6 @@ class sendEmail
             puts "Email sent successfully!"
         else
             puts "email not sent!"
-    end
+    	end
+   end
 end
