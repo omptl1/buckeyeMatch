@@ -3,7 +3,7 @@ require 'mail'
 
 class SendEmail
 
-    def email(webScrapedInfo)
+    def emailRecc(webScrapedInfo)
 
         
         #Get user email
