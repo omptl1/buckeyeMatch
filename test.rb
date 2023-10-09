@@ -65,11 +65,29 @@ orgPage = orgAgent.get(finalLink)
 # Creating document parser
 orgDoc = orgPage.parser
 
-orgData = orgDoc.xpath(".td[2]")
-orgEmail = orgData.xpath(".td[7]")
+org_info_div = orgDoc.at_css('#ctl00_ContentBody_pageFormControl_panel_information')
 
-puts "\n The organization purpose statement is: #{orgData}"
-puts "\n The organization email is: #{orgEmail}"
+# Check if the organization information div was found
+if org_info_div
+  # Find the purpose statement within the organization information div
+  purpose_statement = org_info_div.at_xpath("//strong[contains(text(), 'Purpose Statement:')]/following-sibling::td").text.strip
+
+  # Find the organization email within the organization information div
+  org_email = org_info_div.at_xpath("//strong[contains(text(), 'Organization Email:')]/following-sibling::td/a").text.strip
+
+  # Find the leader's email within the organization information div
+  leader_email = org_info_div.at_xpath("//strong[contains(text(), 'Primary Leader:')]/following-sibling::td/a/@href").to_s.gsub("mailto:", "")
+
+  # Print the leader's email
+  puts "\n The organization leader's email is: #{leader_email}"
+
+  # Print the scraped information
+  puts "\n The organization purpose statement is: #{purpose_statement}"
+  puts "\n The organization email is: #{org_email}"
+else
+  puts "\n Organization information not found on the page."
+end
+
 
 =begin  
 # Fetch and parse the chosen club's details
