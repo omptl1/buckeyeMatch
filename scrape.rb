@@ -39,8 +39,3 @@ search_form = page.forms.find do |form|
       end
     end
 end
-  
-  
-  
-  
-  
