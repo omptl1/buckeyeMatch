@@ -70,97 +70,100 @@ class Main
   orgs = []
 
   randomNumbers = []
+  random_org_index = 0
   count = 0
 
-  
+  # Output to file
+  fileName = "student_org.txt"
+
+  # Check if the random number has already been generated
   while count < numOrgs
-    # Make a random number between 0 and org data size
+
     random_org_index = rand(organization_data.size)
 
-    # Check if the random number has already been generated
-    if !randomNumbers.include?(random_org_index)
+    if !(randomNumbers.include?(random_org_index))
+      # Make a random number between 0 and org data size
       randomNumbers.push(random_org_index)
       count += 1
     end
+  
+  end
+
+  # Iterate through the unique random numbers
+  randomNumbers.each do |random_org_index|
 
     # Ensure valid input, if invalid, skip this iteration
     if random_org_index < 0 || random_org_index >= organization_data.size
       next
     end
 
-    # Iterate through the unique random numbers
-    randomNumbers.each do |random_org_index|
+    chosen_org = organization_data[random_org_index]
+    orgs.push(chosen_org)
+    org_id = chosen_org[:id]
 
-      chosen_org = organization_data[random_org_index]
-      orgs.push(chosen_org)
-      org_id = chosen_org[:id]
+    details_url = "https://activities.osu.edu/involvement/student_organizations/find_a_student_org?i=#{org_id}&v=list&s=#{search_query}&c=Columbus&page=0"
 
-      details_url = "https://activities.osu.edu/involvement/student_organizations/find_a_student_org?i=#{org_id}&v=list&s=#{search_query}&c=Columbus&page=0"
+    # Grabbing the URL of the chosen organization
+    chosen_Link = doc.xpath("//strong/a/@href")
 
-      # Grabbing the URL of the chosen organization
-      chosen_Link = doc.xpath("//strong/a/@href")
+    # Setting orgLink to the activities main site to later append the chosen_Link to
+    orgLink = "https://activities.osu.edu"
+    finalLink = orgLink.chomp + chosen_Link[random_org_index]  # Move this line inside the loop
+    orgLinks.push(orgLink.chomp + chosen_Link[random_org_index])
 
-      # Setting orgLink to the activities main site to later append the chosen_Link to
-      orgLink = "https://activities.osu.edu"
-      finalLink = orgLink.chomp + chosen_Link[random_org_index]  # Move this line inside the loop
-      orgLinks.push(orgLink.chomp + chosen_Link[random_org_index])
+    # Creating new Mechanize object
+    orgAgent = Mechanize.new
 
-      # Creating new Mechanize object
-      orgAgent = Mechanize.new
+    # Creating HTML page for the chosen organization
+    orgPage = orgAgent.get(finalLink)
 
-      # Creating HTML page for the chosen organization
-      orgPage = orgAgent.get(finalLink)
+    # Creating document parser
+    orgDoc = orgPage.parser
 
-      # Creating document parser
-      orgDoc = orgPage.parser
+    orgData = orgDoc.xpath("//td/text()")
 
-      orgData = orgDoc.xpath("//td/text()")
+    # Scrape organization name
+    orgNames.push(organization_data[random_org_index][:name])
 
-      # Scrape organization name
-      orgNames.push(organization_data[random_org_index][:name])
+    # Get primary leader name and hyperlinked email
+    email = orgDoc.at("th:contains('Primary Leader:') + td a")['href'].sub('mailto:', '')
+    orgLeaderEmails.push(email)
+    
+    orgLead = orgDoc.at("th:contains('Primary Leader:') + td a").text
+    orgLeaders.push(orgLead)
 
-      # Get primary leader name and hyperlinked email
-      email = orgDoc.at("th:contains('Primary Leader:') + td a")['href'].sub('mailto:', '')
-      orgLeaderEmails.push(email)
-      
-      orgLead = orgDoc.at("th:contains('Primary Leader:') + td a").text
-      orgLeaders.push(orgLead)
+    # Output organization information
+    puts "\n The organization name is: #{orgNames.last}"
+    puts "\n The organization campus is: #{orgData[0]}"
+    puts "\n The organization status is: #{orgData[1]}"
+    puts "\n The organization purpose statement is: #{orgData[2]}"
+    puts "\n The Primary leader is: #{orgLead}"
+    puts "\n The primary leader's email is: #{email}"
+    puts "\n\n-------------------------------------------------------------------------------\n\n"
 
-      # Output organization information
-      puts "\n The organization name is: #{orgNames.last}"
-      puts "\n The organization campus is: #{orgData[0]}"
-      puts "\n The organization status is: #{orgData[1]}"
-      puts "\n The organization purpose statement is: #{orgData[2]}"
-      puts "\n The Primary leader is: #{orgLead}"
-      puts "\n The primary leader's email is: #{email}"
-      puts "\n\n-------------------------------------------------------------------------------\n\n"
-
-      # Output to file
-      fileName = "student_org.txt"
-      File.open(fileName, 'a') do |file|
-        file.write("\n The organization name is: #{orgNames.last}")
-        file.write("\n The organization campus is: #{orgData[0]}")
-        file.write("\n The organization status is: #{orgData[1]}")
-        file.write("\n The organization purpose statement is: #{orgData[2]}")
-        file.write("\n The Primary leader is: #{orgLead}")
-        file.write("\n The primary leader's email is: #{email}")
-        file.write("\n\n-------------------------------------------------------------------------------\n\n")
-      end
-
-      # Append organization details to the HTML string
-      html_string += "<h2>Organization Name: #{orgNames.last}</h2>"
-      html_string += "<p>Campus: #{orgData[0]}</p>"
-      html_string += "<p>Status: #{orgData[1]}</p>"
-      html_string += "<p>Purpose Statement: #{orgData[2]}</p>"
-      html_string += "<p>Primary Leader: #{orgLead}</p>"
-      html_string += "<p>Primary Leader's Email: <a href='mailto:#{email}'>#{email}</a></p>"
-      # Assuming email is the student leader's email
-      html_string += "<p><a href='contact_form.html?email=#{email}'>Contact Student Leader</a></p>"
-
-      html_string += "<hr>"
-      html_string += "\n\n-------------------------------------------------------------------------------\n\n"
-
+ 
+    File.open(fileName, 'a') do |file|
+      file.write("\n The organization name is: #{orgNames.last}")
+      file.write("\n The organization campus is: #{orgData[0]}")
+      file.write("\n The organization status is: #{orgData[1]}")
+      file.write("\n The organization purpose statement is: #{orgData[2]}")
+      file.write("\n The Primary leader is: #{orgLead}")
+      file.write("\n The primary leader's email is: #{email}")
+      file.write("\n\n-------------------------------------------------------------------------------\n\n")
     end
+
+    # Append organization details to the HTML string
+    html_string += "<h2>Organization Name: #{orgNames.last}</h2>"
+    html_string += "<p>Campus: #{orgData[0]}</p>"
+    html_string += "<p>Status: #{orgData[1]}</p>"
+    html_string += "<p>Purpose Statement: #{orgData[2]}</p>"
+    html_string += "<p>Primary Leader: #{orgLead}</p>"
+    html_string += "<p>Primary Leader's Email: <a href='mailto:#{email}'>#{email}</a></p>"
+    # Assuming email is the student leader's email
+    html_string += "<p><a href='contact_form.html?email=#{email}'>Contact Student Leader</a></p>"
+
+    html_string += "<hr>"
+    html_string += "\n\n-------------------------------------------------------------------------------\n\n"
   end
 
   # Close the HTML string
