@@ -68,32 +68,25 @@ class Main
   orgLinks = []
   orgLeaderEmails = []
   orgs = []
-
-  randomNumbers = []
-  count = 0
-
-  
-  while count < numOrgs
-    # Make a random number between 0 and org data size
+  require 'set'
+  randomNumbers = Set.new
+  while orgs.size < numOrgs && orgs.size < organization_data.size
     random_org_index = rand(organization_data.size)
 
-    # Check if the random number has already been generated
-    if !randomNumbers.include?(random_org_index)
-      randomNumbers.push(random_org_index)
-      count += 1
-    end
-
-    # Ensure valid input, if invalid, skip this iteration
-    if random_org_index < 0 || random_org_index >= organization_data.size
-      next
-    end
-
-    # Iterate through the unique random numbers
-    randomNumbers.each do |random_org_index|
-
+  # If this index hasn't been chosen before, select the organization
+    unless randomNumbers.include?(random_org_index)
+      randomNumbers.add(random_org_index) # Add the index to our set
       chosen_org = organization_data[random_org_index]
       orgs.push(chosen_org)
-      org_id = chosen_org[:id]
+  
+
+
+# Now, 'orgs' contains the randomly selected unique organizations. You can proceed to use it.
+
+orgs.each do |org|
+  org_id = org[:id]
+
+  
 
       details_url = "https://activities.osu.edu/involvement/student_organizations/find_a_student_org?i=#{org_id}&v=list&s=#{search_query}&c=Columbus&page=0"
 
@@ -162,7 +155,7 @@ class Main
 
     end
   end
-
+end
   # Close the HTML string
   html_string += "</body></html>"
 
@@ -193,5 +186,5 @@ class Main
 
   #This is used to clear the file after sending recommendations
   File.open(fileName, 'w') do |file| end
-
+  
 end
