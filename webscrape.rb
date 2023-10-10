@@ -159,8 +159,6 @@ class Main
     html_string += "<p>Purpose Statement: #{orgData[2]}</p>"
     html_string += "<p>Primary Leader: #{orgLead}</p>"
     html_string += "<p>Primary Leader's Email: <a href='mailto:#{email}'>#{email}</a></p>"
-    # Assuming email is the student leader's email
-    html_string += "<p><a href='contact_form.html?email=#{email}'>Contact Student Leader</a></p>"
 
     html_string += "<hr>"
     html_string += "\n\n-------------------------------------------------------------------------------\n\n"
