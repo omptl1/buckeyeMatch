@@ -1,0 +1,6 @@
+cd teambob-webscrape # root directory of project
+bundle init # creates a bare-bones Gemfile
+bundle add "mechanize" # adds mechanize to the Gemfile
+bundle add "nokogiri" # adds nokogiri to the Gemfile
+bundle add "net/smtp" # adds net/smtp to the Gemfile
+bundle add "mail" # adds mail to the Gemfile
