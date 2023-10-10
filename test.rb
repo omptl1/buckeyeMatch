@@ -20,7 +20,10 @@ page = agent.get(full_url)
 
 # Parse the fetched page with Nokogiri
 doc = page.parser
- 
+if doc.content.include?("No Student Organizations found.")
+  puts "Invalid search. No organizations found for '#{search_query}'."
+  exit
+end 
 # Grab text for each organization and place in map
 organization_data = doc.xpath('//strong/a/text()').map do |header|
   {
