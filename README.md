@@ -8,7 +8,7 @@ narrow down their results to make decisions easier. The campus, status, purpose 
 and primary leader contact information (email) are printed to the console and optionally emailed or saved as 
 an HTML file.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Overview:
 
@@ -18,7 +18,7 @@ is selected the user will be asked if they would like to receive an email of the
 document. If the user responds positively they are asked to enter the email they would like to use. The program 
 then sends the user a list of organizations, along with pertinent info, they might be interested in. 
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Instructions:
 
