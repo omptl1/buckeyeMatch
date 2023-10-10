@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
  The organization name is: Business Law Society
  The organization campus is: 
@@ -1266,3 +1267,5 @@ The main purpose of our club includes: To improve members’ understanding of in
 
 -------------------------------------------------------------------------------
 
+=======
+>>>>>>> refs/remotes/origin/main
